@@ -42,7 +42,11 @@ fourcc = cv2.VideoWriter_fourcc(*'XVID')
 fps = cap.get(cv2.CAP_PROP_FPS)
 size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 time_str = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
-videoWriter = cv2.VideoWriter(time_str+'.avi', fourcc, fps, size)
+video_dir = 'videos/'
+if not os.path.exists(video_dir):
+    os.makedirs(video_dir)
+video_filename = video_dir + time_str + '.avi'
+videoWriter = cv2.VideoWriter(video_filename, fourcc, fps, size)
 
 while(True):
     ret,frame = cap.read()
