@@ -8,7 +8,6 @@ import os
 # from nets import *
 import nets
 
-
 class_names = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 
 # model = nets.getnet1()
@@ -19,7 +18,6 @@ model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-
 """ checkpoint_path1 = "./models_2/model.ckpt"
 checkpoint_dir1 = os.path.dirname(checkpoint_path1)
 latest = tf.train.latest_checkpoint(checkpoint_dir1) """
@@ -29,7 +27,6 @@ checkpoint_dir2 = os.path.dirname(checkpoint_path2)
 latest = tf.train.latest_checkpoint(checkpoint_dir2)
 
 model.load_weights(latest)
-
 
 ### Camara
 cap = cv2.VideoCapture(0)
@@ -69,15 +66,5 @@ while(True):
     
     if cv2.waitKey(1)&0xFF==ord('q'):
         break
-    
 
-# with tf.device('/cpu:0'):
-#     for i in range(179):
-#         temp_x = x_test[20*i:20*(i+1)]
-#         preds = np.argmax(model.predict(temp_x), axis=-1)
-#         print(preds)
-#         c = np.bincount(preds)
-#         print(np.argmax(c))
-#         print(y_test[20*i:20*(i+1)])
-#         print('next')
 
