@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, callbacks
 import numpy as np
 import os
-# from nets import *
+import time
 import nets
 
 class_names = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
@@ -36,6 +36,14 @@ count = 0
 haarcascade_path = '/home/dean/Projects/Emotion_Detect/.venv/lib64/python3.6/site-packages/cv2/data/haarcascade_frontalface_default.xml'
 detector = cv2.CascadeClassifier(haarcascade_path)
 emotion = 'Neutral'
+
+# save video
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+fps = cap.get(cv2.CAP_PROP_FPS)
+size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+time_str = time.strftime("%Y_%m_%d_%H_%M_%S", time.localtime())
+videoWriter = cv2.VideoWriter(time_str+'.avi', fourcc, fps, size)
+
 while(True):
     ret,frame = cap.read()
     
@@ -63,6 +71,8 @@ while(True):
             emotion = class_names[label]
         
     cv2.imshow('frame',frame)
+    
+    videoWriter.write(frame) # write
     
     if cv2.waitKey(1)&0xFF==ord('q'):
         break
