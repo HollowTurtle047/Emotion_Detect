@@ -76,6 +76,6 @@ cp_callback = callbacks.ModelCheckpoint(checkpoint_path, verbose=1, save_weights
 
 # model.save_weights(checkpoint_path.format(epoch=0))
 with tf.device('/cpu:0'):
-    model.fit(x_train, y_train, batch_size=100, epochs=20, callbacks=[cp_callback])
+    model.fit(x_train, y_train, batch_size=100, epochs=30, callbacks=[cp_callback])
     model.evaluate(x_test, y_test)
 
