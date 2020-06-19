@@ -1,0 +1,16 @@
+PKG_CONFIG_PATH="/usr/local/ffmpeg_build/lib/pkgconfig" ./configure \
+  --prefix="/usr/local/ffmpeg_build" \
+  --pkg-config-flags="--static" \
+  --extra-cflags="-I/usr/local/ffmpeg_build/include" \
+  --extra-ldflags="-L/usr/localffmpeg_build/lib" \
+  --enable-gpl \
+  --enable-libx264 \
+  --enable-libx265 \
+  --enable-nonfree \
+  --disable-yasm
+
+
+
+  ./configure --prefix="/usr/local/ffmpeg_build" --enable-static --disable-opencl
+
+  cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="/usr/local/ffmpeg_build" -DENABLE_SHARED:bool=off ../../source

@@ -30,7 +30,7 @@ model.load_weights(latest)
 
 ### Camara
 cap = cv2.VideoCapture(0)
-iter_num = 5
+iter_num = 10
 tempFaces = np.zeros((iter_num,48,48))
 count = 0
 haarcascade_path = '/home/dean/Projects/Emotion_Detect/.venv/lib64/python3.6/site-packages/cv2/data/haarcascade_frontalface_default.xml'
@@ -38,15 +38,18 @@ detector = cv2.CascadeClassifier(haarcascade_path)
 emotion = 'Neutral'
 
 # save video
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-fps = cap.get(cv2.CAP_PROP_FPS)
-size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-time_str = time.strftime("%Y_%m_%d/%Y_%m_%d_%H_%M_%S", time.localtime())
-video_filename = 'videos/' + time_str + '.avi'
-video_dir = os.path.dirname(video_filename)
-if not os.path.exists(video_dir):
-    os.makedirs(video_dir)
-videoWriter = cv2.VideoWriter(video_filename, fourcc, fps, size)
+# fourcc = cv2.VideoWriter_fourcc(*'XVID')
+# # fps = cap.get(cv2.CAP_PROP_FPS)
+# fps = 5
+# size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+isRecording = False
+# date_str = time.strftime("%Y_%m_%d/%Y_%m_%d", time.localtime())
+# time_str = time.strftime("%H_%M_%S", time.localtime())
+# video_filename = 'videos/' + time_str + '.avi'
+# video_dir = 'videos/' + date_str
+# if not os.path.exists(video_dir):
+#     os.makedirs(video_dir)
+# videoWriter = cv2.VideoWriter(video_filename, fourcc, fps, size)
 
 while(True):
     ret,frame = cap.read()
@@ -76,11 +79,38 @@ while(True):
         
     cv2.imshow('frame',frame)
     
-    videoWriter.write(frame) # write
+    if isRecording:
+        videoWriter.write(frame) # write
     
-    if cv2.waitKey(1)&0xFF==ord('q'):
+    key = cv2.waitKey(1)&0xFF
+    
+    if key == ord('q'):
+        if isRecording:
+            videoWriter.release()
         break
+    elif key == ord('r'):
+        if not isRecording:
+            # start Recording
+            time_str = time.strftime("%Y_%m_%d/%Y_%m_%d_%H_%M_%S", time.localtime())
+            video_filename = 'videos/' + time_str + '.avi'
+            video_dir = os.path.dirname(video_filename)
+            if not os.path.exists(video_dir):
+                os.makedirs(video_dir)
+            fourcc = cv2.VideoWriter_fourcc(*'XVID')
+            fps = cap.get(cv2.CAP_PROP_FPS)
+            # fps = 10
+            size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+            videoWriter = cv2.VideoWriter(video_filename, fourcc, fps, size)
+            
+        else:
+            # stop Recording
+            videoWriter.release()
+        isRecording = not isRecording
+            
+    # if cv2.waitKey(1)&0xFF==ord('q'):
+    #     if isRecording:
+    #         videoWriter.release()
+    #     break
 
-videoWriter.release()
 
 
