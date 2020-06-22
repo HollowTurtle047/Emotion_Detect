@@ -4,13 +4,11 @@ from tensorflow.keras import datasets, layers, models, callbacks
 import numpy as np
 import os
 import nets
-# from class_names import *
 
 with open('fer2013.csv') as f:
     f_csv = csv.DictReader(f)
     
     # Initialize
-    # i = 0
     train_images = []
     train_labes = [] 
     test_images = []
@@ -40,9 +38,6 @@ with open('fer2013.csv') as f:
             test_labes_private.append(temp_y)
         
     f.close()
-        # i+=1
-        # if i>0:
-        #     break
 
 x_test = np.array(test_images)
 x_test = x_test.reshape((3589,48,48,1))
@@ -66,4 +61,3 @@ model.load_weights(latest)
 
 with tf.device('/cpu:0'):
     model.evaluate(x_test, y_test)
-

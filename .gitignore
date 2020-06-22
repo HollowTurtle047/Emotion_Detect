@@ -3,3 +3,4 @@
 /.venv/
 /videos/
 /models/
+test*.py

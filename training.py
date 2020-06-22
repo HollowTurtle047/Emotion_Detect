@@ -4,7 +4,6 @@ import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, callbacks
 import numpy as np
 import os
-# from class_names import *
 
 with open('fer2013.csv') as f:
     f_csv = csv.DictReader(f)
@@ -62,13 +61,11 @@ model = models.Sequential([
     layers.Dropout(0.4),
     layers.Dense(7, activation='softmax')
 ])
-
-# model.summary()
+# model.summary() # display model structure
 
 model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
-
 
 checkpoint_path = "./models/model.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
