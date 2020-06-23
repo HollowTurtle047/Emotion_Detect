@@ -1,6 +1,5 @@
 
 import cv2
-# import csv
 import tensorflow as tf
 from tensorflow.keras import datasets, layers, models, callbacks
 import numpy as np
@@ -10,40 +9,28 @@ import nets
 
 class_names = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 
-# model = nets.getnet1()
-model = nets.getnet2()
+model_path = './models/model1/model.h5'
+model = models.load_model(model_path)
+input_size = 42
 
-
-model.compile(optimizer='adam',
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
-
-### use first model
-""" checkpoint_path1 = "./models_2/model.ckpt"
-checkpoint_dir1 = os.path.dirname(checkpoint_path1)
-latest = tf.train.latest_checkpoint(checkpoint_dir1) """
-
-### use second model
-checkpoint_path2 = "./models_3/model.ckpt"
-checkpoint_dir2 = os.path.dirname(checkpoint_path2)
-latest = tf.train.latest_checkpoint(checkpoint_dir2)
-
-model.load_weights(latest)
+### Add if GPU needed
+# # set gpu auto allocate memory
+# gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
+# for gpu in gpus:
+#   tf.config.experimental.set_memory_growth(gpu,True)
 
 ### Camara
 cap = cv2.VideoCapture(0)
-iter_num = 10
-tempFaces = np.zeros((iter_num,48,48))
-count = 0
 haarcascade_path = '/home/dean/Projects/Emotion_Detect/.venv/lib64/python3.6/site-packages/cv2/data/haarcascade_frontalface_default.xml'
 detector = cv2.CascadeClassifier(haarcascade_path)
 emotion = 'Neutral'
 isRecording = False
 
+### Main loop
 while(True):
     ret,frame = cap.read()
     
-    ## cv2 detector
+    # cv2 detector
     face_zone = detector.detectMultiScale(frame)
     cv2.putText(frame,"Q to quit", (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
     
@@ -53,26 +40,33 @@ while(True):
         frame_slice = frame[y:y+h, x:x+w]
         frame_slice = cv2.resize(frame_slice, (48,48))
         # cv2.imshow('frame_slice',frame_slice) # enable to see the slice
+        frame_slice = cv2.cvtColor(frame_slice, cv2.COLOR_BGR2GRAY) # gray
+        frame_slice = frame_slice.reshape(1, 48, 48)
+        tempFace = np.concatenate(
+            (frame_slice[:, 0:0+input_size, 0:0+input_size],
+             frame_slice[:, 0:0+input_size, 6:6+input_size],
+             frame_slice[:, 6:6+input_size, 0:0+input_size],
+             frame_slice[:, 6:6+input_size, 6:6+input_size],
+             frame_slice[:, 3:3+input_size, 3:3+input_size])
+        )
+        tempFace = np.concatenate((tempFace, np.flip(tempFace, 2)))
         
-        tempFaces[count] = cv2.cvtColor(frame_slice,cv2.COLOR_BGR2GRAY) # gray and save
-        count = (count+1)%iter_num
-        
-        # detection
-        if count == 0:
-            tempFaces = tempFaces / 255.0
-            with tf.device('/cpu:0'):
-                preds = np.argmax(model.predict(np.resize(tempFaces,(iter_num,48,48,1))), axis=-1)
-            counts = np.bincount(preds)
-            label = np.argmax(counts)
-            emotion = class_names[label]
-            
+        # Detection
+        tempFace = tempFace / 255.0
+        with tf.device('/cpu:0'):
+            preds = np.argmax(model.predict(np.resize(tempFace,(10,input_size,input_size,1))), axis=-1)
+        counts = np.bincount(preds)
+        label = np.argmax(counts)
+        emotion = class_names[label]
+    
+    # Record
     if isRecording:
         videoWriter.write(frame) # write
         cv2.putText(frame,"Recording", (10,60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 2)
 
     cv2.imshow('frame',frame)
     
-    key = cv2.waitKey(1)&0xFF
+    key = cv2.waitKey(1)&0xFF # Key input
     
     if key == ord('q'):
         if isRecording:
