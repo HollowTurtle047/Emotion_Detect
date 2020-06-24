@@ -1,0 +1,8 @@
+{
+  "name": "My tensenflow",
+  "image": "tensorflow/tensorflow:latest-gpu",
+"shutdownAction": "stopCompose",
+"extensions": [
+	"ms-python.python"
+]
+}

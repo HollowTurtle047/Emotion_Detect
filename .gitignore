@@ -1,0 +1,8 @@
+
+fer2013.csv
+.venv/
+videos/
+test*.py
+note
+__pycache__/
+packages/
